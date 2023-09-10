@@ -20,10 +20,23 @@ import MyPlugin
 
 // MARK: - Project
 
-// Local plugin loaded
-let localHelper = LocalHelper(name: "MyPlugin")
 
 // Creates our project using a helper function defined in ProjectDescriptionHelpers
-let project = Project.app(name: "StandByWidget",
-													platform: .iOS,
-													additionalTargets: ["StandByWidgetKit", "StandByWidgetUI"])
+
+let builder = ProjectBuilder(
+	bundleIDPrefix: "com.emiliopelaez.",
+	version: "1.0",
+	build: "1"
+).makeAppTargets(
+	name: "StandByWidget",
+	platform: .iOS
+).makeAppExtensionTargets(
+	name: "StandByWidgetExtension",
+	platform: .iOS,
+	kind: .widgets)
+
+let project = Project(
+	name: "StandBy",
+	organizationName: "Emilio Peláez",
+	targets: builder.targets
+)
