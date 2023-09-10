@@ -67,7 +67,7 @@ public struct ProjectBuilder {
 	
 	public func makeAppExtensionTargets(name: String, platform: Platform, kind: AppExtensionKind, dependencies: [TargetDependency] = []) -> ProjectBuilder {
 		var infoPlist = self.infoPlist
-		infoPlist["NSExtensionPointIdentifier"] = .string(kind.rawValue)
+		infoPlist["NSExtension"] = .dictionary(["NSExtensionPointIdentifier": .string(kind.rawValue)])
 		
 		let mainTarget = Target(
 			name: name,

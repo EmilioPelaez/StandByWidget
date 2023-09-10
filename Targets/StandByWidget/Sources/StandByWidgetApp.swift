@@ -1,5 +1,4 @@
 import SwiftUI
-import StandByWidgetUI
 
 @main
 struct StandByWidgetApp: App {
@@ -7,5 +6,11 @@ struct StandByWidgetApp: App {
 		WindowGroup {
 			ContentView()
 		}
+	}
+}
+
+struct ContentView: View {
+	var body: some View {
+		Text("Hello World")
 	}
 }
