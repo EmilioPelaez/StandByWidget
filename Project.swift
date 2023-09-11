@@ -15,7 +15,7 @@ let builder = ProjectBuilder(
 	platform: .iOS,
 	dependencies: [
 		.target(name: extensionName),
-		.package(product: "Shared"),
+		.external(name: "Shared"),
 	]
 ).makeAppExtensionTargets(
 	name: extensionName,
@@ -23,8 +23,8 @@ let builder = ProjectBuilder(
 	platform: .iOS,
 	kind: .widgets,
 	dependencies: [
-		.package(product: "Shared"),
-		.package(product: "WidgetViews"),
+		.external(name: "Shared"),
+		.external(name: "WidgetViews"),
 	]
 )
 
