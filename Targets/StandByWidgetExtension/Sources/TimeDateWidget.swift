@@ -39,9 +39,8 @@ extension TimeDateWidget {
 		func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
 			let initialDate = Date.now
 			let previousMinute = initialDate.minuteStart
-			let dates: [Date?] = [initialDate] + (0..<(60 * 5)).compactMap { previousMinute?.addingMinutes($0) }
-			
-			let entries = dates.compactMap { $0 }.map(Entry.init)
+			let dates = [initialDate] + (0..<(60 * 5)).compactMap { previousMinute?.addingMinutes($0) }.compactMap { $0 }
+			let entries = dates.map(Entry.init)
 			
 			completion(.init(entries: entries, policy: .atEnd))
 		}
