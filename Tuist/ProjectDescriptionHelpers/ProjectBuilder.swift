@@ -9,24 +9,19 @@ import ProjectDescription
 
 public struct ProjectBuilder {
 	
+	public let developmentTeam: String
 	public let bundleIDPrefix: String
 	public let version: String
 	public let build: String
 	
-	public let targets: [Target]
+	public private(set) var targets: [Target]
 	
-	public init(bundleIDPrefix: String, version: String, build: String) {
+	public init(developmentTeam: String, bundleIDPrefix: String, version: String, build: String) {
+		self.developmentTeam = developmentTeam
 		self.bundleIDPrefix = bundleIDPrefix
 		self.version = version
 		self.build = build
 		self.targets = []
-	}
-	
-	init(bundleIDPrefix: String, version: String, build: String, targets: [Target]) {
-		self.bundleIDPrefix = bundleIDPrefix
-		self.version = version
-		self.build = build
-		self.targets = targets
 	}
 	
 	var infoPlist: [String: InfoPlist.Value] {
@@ -36,7 +31,14 @@ public struct ProjectBuilder {
 		]
 	}
 	
-	public func makeAppTargets(name: String, platform: Platform, dependencies: [TargetDependency] = []) -> ProjectBuilder {
+	var settings: SettingsDictionary {
+		SettingsDictionary()
+			.automaticCodeSigning(devTeam: developmentTeam)
+	}
+	
+	public func makeAppTargets(name: String,
+														 platform: Platform,
+														 dependencies: [TargetDependency] = []) -> ProjectBuilder {
 		let mainTarget = Target(
 			name: name,
 			platform: platform,
@@ -45,7 +47,8 @@ public struct ProjectBuilder {
 			infoPlist: .extendingDefault(with: infoPlist),
 			sources: ["Targets/\(name)/Sources/**"],
 			resources: ["Targets/\(name)/Resources/**"],
-			dependencies: dependencies
+			dependencies: dependencies,
+			settings: .settings(base: settings, configurations: [])
 		)
 		
 		let testTarget = Target(
@@ -55,17 +58,19 @@ public struct ProjectBuilder {
 			bundleId: bundleIDPrefix + name + "Tests",
 			infoPlist: .default,
 			sources: ["Targets/\(name)/Tests/**"],
-			dependencies: [
-				.target(name: "\(name)")
-			])
+			dependencies: [.target(name: "\(name)")]
+		)
 		
-		return .init(bundleIDPrefix: bundleIDPrefix,
-								 version: version,
-								 build: build,
-								 targets: targets + [mainTarget, testTarget])
+		var copy = self
+		copy.targets.append(contentsOf: [mainTarget, testTarget])
+		return copy
 	}
 	
-	public func makeAppExtensionTargets(name: String, platform: Platform, kind: AppExtensionKind, dependencies: [TargetDependency] = []) -> ProjectBuilder {
+	public func makeAppExtensionTargets(name: String,
+																			idSuffix: String? = nil,
+																			platform: Platform,
+																			kind: AppExtensionKind,
+																			dependencies: [TargetDependency] = []) -> ProjectBuilder {
 		var infoPlist = self.infoPlist
 		infoPlist["NSExtension"] = .dictionary(["NSExtensionPointIdentifier": .string(kind.rawValue)])
 		
@@ -73,11 +78,12 @@ public struct ProjectBuilder {
 			name: name,
 			platform: platform,
 			product: .appExtension,
-			bundleId: bundleIDPrefix + name,
+			bundleId: bundleIDPrefix + (idSuffix ?? name),
 			infoPlist: .extendingDefault(with: infoPlist),
 			sources: ["Targets/\(name)/Sources/**"],
 			resources: ["Targets/\(name)/Resources/**"],
-			dependencies: dependencies
+			dependencies: dependencies,
+			settings: .settings(base: settings, configurations: [])
 		)
 		
 		let testTarget = Target(
@@ -87,14 +93,12 @@ public struct ProjectBuilder {
 			bundleId: bundleIDPrefix + name + "Tests",
 			infoPlist: .default,
 			sources: ["Targets/\(name)/Tests/**"],
-			dependencies: [
-				.target(name: "\(name)")
-			])
+			dependencies: [.target(name: "\(name)")]
+		)
 		
-		return .init(bundleIDPrefix: bundleIDPrefix,
-								 version: version,
-								 build: build,
-								 targets: targets + [mainTarget])
+		var copy = self
+		copy.targets.append(contentsOf: [mainTarget])
+		return copy
 	}
 	
 }
