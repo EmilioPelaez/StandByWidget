@@ -6,13 +6,15 @@
 //  Copyright © 2023 Emilio Peláez. All rights reserved.
 //
 
+import Shared
 import SwiftUI
 import WidgetKit
+import WidgetViews
 
 struct TimeDateWidget: Widget {
 	var body: some WidgetConfiguration {
 		StaticConfiguration(kind: String(describing: type(of: self)), provider: Provider()) { entry in
-			ContentView(date: .now)
+			TimeDateWidgetView(date: .now)
 		}
 		.configurationDisplayName("Time and Date")
 		.description("The current time and date!")
@@ -35,7 +37,13 @@ extension TimeDateWidget {
 		}
 		
 		func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-			completion(.init(entries: [.init(date: .now)], policy: .atEnd))
+			let initialDate = Date.now
+			let previousMinute = initialDate.minuteStart
+			let dates: [Date?] = [initialDate] + (0..<(60 * 5)).compactMap { previousMinute?.addingMinutes($0) }
+			
+			let entries = dates.compactMap { $0 }.map(Entry.init)
+			
+			completion(.init(entries: entries, policy: .atEnd))
 		}
 	}
 }

@@ -13,12 +13,20 @@ let builder = ProjectBuilder(
 ).makeAppTargets(
 	name: appName,
 	platform: .iOS,
-	dependencies: [.target(name: extensionName)]
+	dependencies: [
+		.target(name: extensionName),
+		.package(product: "Shared"),
+	]
 ).makeAppExtensionTargets(
 	name: extensionName,
 	idSuffix: "StandByWidget.WidgetExtension",
 	platform: .iOS,
-	kind: .widgets)
+	kind: .widgets,
+	dependencies: [
+		.package(product: "Shared"),
+		.package(product: "WidgetViews"),
+	]
+)
 
 let project = Project(
 	name: "StandBy",
