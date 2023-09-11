@@ -14,7 +14,7 @@ import WidgetViews
 struct TimeDateWidget: Widget {
 	var body: some WidgetConfiguration {
 		StaticConfiguration(kind: String(describing: type(of: self)), provider: Provider()) { entry in
-			TimeDateWidgetView(date: .now)
+			TimeDateWidgetView(date: entry.date)
 		}
 		.configurationDisplayName("Time and Date")
 		.description("The current time and date!")
