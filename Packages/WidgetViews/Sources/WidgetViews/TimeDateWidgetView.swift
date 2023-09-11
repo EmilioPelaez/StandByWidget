@@ -24,6 +24,7 @@ public struct TimeDateWidgetView: View {
 					.fontWeight(.medium)
 					.minimumScaleFactor(0.01)
 					.fontDesign(.rounded)
+					.contentTransition(.numericText())
 			}
 			VStack(alignment: .leading) {
 				Text(date.formatted(Date.FormatStyle().month(.wide)))
@@ -37,10 +38,13 @@ public struct TimeDateWidgetView: View {
 				Text(date.formatted(Date.FormatStyle().day(.defaultDigits)))
 					.font(.largeTitle)
 					.fontDesign(.rounded)
+					.contentTransition(.numericText())
 			}
 		}
 		.frame(maxWidth: .infinity, alignment: .center)
-		.containerBackground(for: .widget) {}
+		.containerBackground(for: .widget) {
+			Color.clear
+		}
 	}
 }
 
