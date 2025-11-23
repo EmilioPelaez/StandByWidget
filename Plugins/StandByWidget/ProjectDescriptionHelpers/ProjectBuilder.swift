@@ -24,36 +24,39 @@ public struct ProjectBuilder {
 		self.targets = []
 	}
 	
-	var infoPlist: [String: InfoPlist.Value] {
+	var infoPlist: [String: Plist.Value] {
 		[
 			"CFBundleShortVersionString": .string(version),
 			"CFBundleVersion": .string(build),
 		]
 	}
 	
-	var settings: SettingsDictionary {
-		SettingsDictionary()
-			.automaticCodeSigning(devTeam: developmentTeam)
+	var settings: Settings {
+		.settings(
+			base: SettingsDictionary()
+				.automaticCodeSigning(devTeam: developmentTeam),
+			configurations: []
+		)
 	}
 	
 	public func makeAppTargets(name: String,
 														 platform: Platform,
 														 dependencies: [TargetDependency] = []) -> ProjectBuilder {
-		let mainTarget = Target(
+		let mainTarget = Target.target(
 			name: name,
-			platform: platform,
+			destinations: [.iPhone, .iPad],
 			product: .app,
 			bundleId: bundleIDPrefix + name,
 			infoPlist: .extendingDefault(with: infoPlist),
 			sources: ["Targets/\(name)/Sources/**"],
 			resources: ["Targets/\(name)/Resources/**"],
 			dependencies: dependencies,
-			settings: .settings(base: settings, configurations: [])
+			settings: settings
 		)
 		
-		let testTarget = Target(
+		let testTarget = Target.target(
 			name: "\(name)Tests",
-			platform: platform,
+			destinations: [.iPhone, .iPad],
 			product: .unitTests,
 			bundleId: bundleIDPrefix + name + "Tests",
 			infoPlist: .default,
@@ -74,21 +77,21 @@ public struct ProjectBuilder {
 		var infoPlist = self.infoPlist
 		infoPlist["NSExtension"] = .dictionary(["NSExtensionPointIdentifier": .string(kind.rawValue)])
 		
-		let mainTarget = Target(
+		let mainTarget = Target.target(
 			name: name,
-			platform: platform,
+			destinations: [.iPhone, .iPad],
 			product: .appExtension,
 			bundleId: bundleIDPrefix + (idSuffix ?? name),
 			infoPlist: .extendingDefault(with: infoPlist),
 			sources: ["Targets/\(name)/Sources/**"],
 			resources: ["Targets/\(name)/Resources/**"],
 			dependencies: dependencies,
-			settings: .settings(base: settings, configurations: [])
+			settings: settings
 		)
 		
-		let testTarget = Target(
+		let testTarget = Target.target(
 			name: "\(name)Tests",
-			platform: platform,
+			destinations: [.iPhone, .iPad],
 			product: .unitTests,
 			bundleId: bundleIDPrefix + name + "Tests",
 			infoPlist: .default,

@@ -1,5 +1,4 @@
 import ProjectDescription
-import ProjectDescriptionHelpers
 import MyPlugin
 
 let appName = "StandByWidget"
@@ -15,7 +14,7 @@ let builder = ProjectBuilder(
 	platform: .iOS,
 	dependencies: [
 		.target(name: extensionName),
-		.external(name: "Shared"),
+		.package(product: "Shared"),
 	]
 ).makeAppExtensionTargets(
 	name: extensionName,
@@ -23,13 +22,17 @@ let builder = ProjectBuilder(
 	platform: .iOS,
 	kind: .widgets,
 	dependencies: [
-		.external(name: "Shared"),
-		.external(name: "WidgetViews"),
+		.package(product: "Shared"),
+		.package(product: "WidgetViews"),
 	]
 )
 
 let project = Project(
 	name: "StandBy",
 	organizationName: "Emilio Peláez",
+	packages: [
+		.local(path: "Packages/Shared"),
+		.local(path: "Packages/WidgetViews"),
+	],
 	targets: builder.targets
 )
